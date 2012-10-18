@@ -109,7 +109,7 @@ default['alfresco']['cifs']['netbios_smb']['session_port']  = "1139"
 
 case platform
 when "debian","ubuntu"
-  node.set['java']['install_flavor'] = "sun"
+  node.set['java']['install_flavor'] = "oracle"
   node.set['alfresco']['pkgs']  = %w{libxalan2-java unzip fastjar libmysql-java}
 else
   node.set['java']['install_flavor'] = "openjdk"
