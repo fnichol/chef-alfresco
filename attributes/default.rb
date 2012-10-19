@@ -21,11 +21,11 @@
 
 ### Alfresco Package And Version Info
 
-default['alfresco']['version'] = "4.0.b"
+default['alfresco']['version'] = "4.2.a"
 default['alfresco']['zip_url'] =
-  "http://dl.alfresco.com/release/community/build-3835/alfresco-community-4.0.b.zip"
+  "http://dl.alfresco.com/release/community/build-4428/alfresco-community-4.2.a.zip"
 default['alfresco']['zip_sha256'] =
-  "2ea7671e9f9217c91eb0e37a32bd8bcc3a71ac6893c29c2cb80b9cb744f0b799"
+  "9cd3e15055d3ad6a24a00c2c45ef2ce1e8bf3a80f36cb928320a530578705387"
 
 
 ### Default Stack-wide Host And Port Defaults
@@ -106,12 +106,12 @@ default['alfresco']['cifs']['netbios_smb']['session_port']  = "1139"
 
 
 ### Platform Package Settings And Defaults
-
+node.set['java']['jdk_version'] = "7"
 case platform
 when "debian","ubuntu"
-  node.set['java']['install_flavor'] = "oracle"
+  #node.set['java']['install_flavor'] = "oracle"
   node.set['alfresco']['pkgs']  = %w{libxalan2-java unzip fastjar libmysql-java}
 else
-  node.set['java']['install_flavor'] = "openjdk"
+  #node.set['java']['install_flavor'] = "openjdk"
   node.set['alfresco']['pkgs']  = []
 end
