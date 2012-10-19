@@ -27,6 +27,7 @@ default['alfresco']['zip_url'] =
 default['alfresco']['zip_sha256'] =
   "9cd3e15055d3ad6a24a00c2c45ef2ce1e8bf3a80f36cb928320a530578705387"
 
+default['java']['jdk_version'] = "7"
 
 ### Default Stack-wide Host And Port Defaults
 
@@ -106,7 +107,6 @@ default['alfresco']['cifs']['netbios_smb']['session_port']  = "1139"
 
 
 ### Platform Package Settings And Defaults
-node.set['java']['jdk_version'] = "7"
 case platform
 when "debian","ubuntu"
   #node.set['java']['install_flavor'] = "oracle"
