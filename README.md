@@ -6,7 +6,18 @@ Installs [Alfresco Community Edition][alfresco_oss].
 
 ## <a name="usage"></a> Usage
 
-Coming soon...
+The default behavior downloads the specified version of the Alfresco Community Edition
+archive from Alfresco's official release download site.
+
+You can optionally specify a `maven_repo_url`, `maven_gav_repository`, and
+`maven_gav_share` to download from a Maven repository, allowing you to use
+more recent snapshots or custom releases from your own Maven repository.
+
+(Note that the release archive is currently still downloaded when 
+maven settings are present for access to tools and other files within the archive)
+
+You can also place [AMPs][alfresco_amps] in `#{tomcat_dir}/amps` and `#{tomcat_dir}/amps_share` which
+will be applied to the repository and Share WARs respectively.
 
 # Requirements
 
@@ -37,6 +48,7 @@ This cookbook depends on the following external cookbooks:
 * [openoffice][openoffice_cb]
 * [swftools][swftools_cb]
 * [tomcat][tomcat_cb] (Opscode)
+* [maven][maven_cb] (Opscode)
 
 ## <a name="installation"></a> Installation
 
@@ -128,6 +140,12 @@ Installs Alfresco Community Edition.
 
 ### zip\_sha256
 
+### maven\_repo\_url
+
+### maven\_gav\_repository
+
+### maven\_gav\_share
+
 ## General Defaults
 
 ### root\_dir
@@ -203,6 +221,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 [alfresco_oss]:   http://www.alfresco.com/community
+[alfresco_amps]:  https://wiki.alfresco.com/wiki/AMP_Files
 [cheffile]:       https://github.com/applicationsonline/librarian/blob/master/lib/librarian/chef/templates/Cheffile
 [chef_repo]:      https://github.com/opscode/chef-repo
 [database_cb]:    http://community.opscode.com/cookbooks/database
@@ -214,6 +233,7 @@ limitations under the License.
 [openoffice_cb]:  http://community.opscode.com/cookbooks/openoffice
 [tomcat_cb]:      http://community.opscode.com/cookbooks/tomcat
 [swftools_cb]:    http://community.opscode.com/cookbooks/swftools
+[maven_cb]:       http://community.opscode.com/cookbooks/maven
 
 [fnichol]:      https://github.com/fnichol
 [repo]:         https://github.com/fnichol/chef-alfresco

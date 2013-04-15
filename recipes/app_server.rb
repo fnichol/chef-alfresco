@@ -48,6 +48,9 @@ include_recipe "openoffice::apps"
 include_recipe "imagemagick"
 include_recipe "swftools"
 include_recipe "tomcat"
+if node['alfresco']['maven_gav_repository'] || node['alfresco']['maven_gav_share']
+  include_recipe "maven"
+end
 
 
 ### Install Package Dependencies
@@ -177,23 +180,86 @@ execute "Clean previous Alfresco Tomcat deployment" do
   not_if    %{test -f #{webapp_dir}/alfresco.war}
 end
 
-%w{alfresco.war share.war}.each do |war|
-  execute "Deploy #{war}" do
-    user      "tomcat6"
-    group     "tomcat6"
+### Deploy WARS from archive zip
+
+if !node['alfresco']['maven_gav_repository']
+  execute "Deploy alfresco.war" do
+    user      alfresco_user
+    group     alfresco_group
     command   <<-COMMAND.gsub(/^ {4}/, '')
 
-      unzip -j #{archive_zip} web-server/webapps/#{war} -d #{temp_dir} && \\
+      unzip -j #{archive_zip} web-server/webapps/alfresco.war -d #{temp_dir}
+    COMMAND
+  end
+end
+if !node['alfresco']['maven_gav_share']
+  execute "Deploy share.war" do
+    user      alfresco_user
+    group     alfresco_group
+    command   <<-COMMAND.gsub(/^ {4}/, '')
+
+      unzip -j #{archive_zip} web-server/webapps/share.war -d #{temp_dir}
+    COMMAND
+  end
+end
+
+### Optionally download from Maven
+
+if node['alfresco']['maven_gav_repository']
+  execute "Extract download Maven artifact #{node['alfresco']['maven_gav_repository']}" do
+    command   <<-COMMAND.gsub(/^ {2}/, '')
+
+      rm -rf #{temp_dir}/alfresco.war && \\
+      mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
+        -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
+        -Dartifact=#{node['alfresco']['maven_gav_repository']} \\
+        -Dpackaging=war \\
+        -Ddest=#{temp_dir}/alfresco.war && \\
+      chown #{alfresco_user}:#{alfresco_group} #{temp_dir}/alfresco.war
+    COMMAND
+  end
+end
+if node['alfresco']['maven_gav_share']
+  execute "Extract download Maven artifact #{node['alfresco']['maven_gav_share']}" do
+    command   <<-COMMAND.gsub(/^ {2}/, '')
+
+      rm -rf #{temp_dir}/share.war && \\
+      mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
+        -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
+        -Dartifact=#{node['alfresco']['maven_gav_share']} \\
+        -Dpackaging=war \\
+        -Ddest=#{temp_dir}/share.war && \\
+      chown #{alfresco_user}:#{alfresco_group} #{temp_dir}/share.war
+    COMMAND
+  end
+end
+
+execute "Install AMPs into WARs" do
+  user      alfresco_user
+  group     alfresco_group
+  command   <<-COMMAND.gsub(/^ {2}/, '')
+  
+    java -jar #{tomcat_dir}/bin/alfresco-mmt.jar install #{tomcat_dir}/amps #{temp_dir}/alfresco.war -directory -verbose && \\
+    java -jar #{tomcat_dir}/bin/alfresco-mmt.jar list #{temp_dir}/alfresco.war && \\
+    java -jar #{tomcat_dir}/bin/alfresco-mmt.jar install #{tomcat_dir}/amps_share #{temp_dir}/share.war -directory -verbose && \\
+    java -jar #{tomcat_dir}/bin/alfresco-mmt.jar list #{temp_dir}/share.war
+  COMMAND
+end
+  
+%w{alfresco.war share.war}.each do |war|
+  execute "Deploy #{war}" do
+    user      alfresco_user
+    group     alfresco_group
+    command   <<-COMMAND.gsub(/^ {4}/, '')
+
       mkdir -p #{temp_dir}/WEB-INF/classes && \\
       cp #{tomcat_base_dir}/shared/classes/log4j.properties \\
         #{temp_dir}/WEB-INF/classes && \\
       (cd #{temp_dir} && \\
         jar -uf #{temp_dir}/#{war} WEB-INF/classes/log4j.properties) && \\
       rm -rf #{temp_dir}/WEB-INF/classes && \\
-      mv #{temp_dir}/#{war} #{webapp_dir}/#{war} && \\
+      mv -f #{temp_dir}/#{war} #{webapp_dir}/#{war} && \\
       sleep 10
     COMMAND
-
-    creates   "#{webapp_dir}/#{war}"
   end
 end
