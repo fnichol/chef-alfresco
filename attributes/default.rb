@@ -23,9 +23,9 @@
 
 default['alfresco']['version'] = "4.2.a"
 default['alfresco']['zip_url'] =
-  "http://dl.alfresco.com/release/community/build-4428/alfresco-community-4.2.a.zip"
+  "http://dl.alfresco.com/release/community/build-04576/alfresco-community-4.2.c.zip"
 default['alfresco']['zip_sha256'] =
-  "9cd3e15055d3ad6a24a00c2c45ef2ce1e8bf3a80f36cb928320a530578705387"
+  "eede352ae98d355170f2860f59271d4509fc04005e1a6f22038978db894aaf8e"
 
 default['java']['jdk_version'] = "7"
 
