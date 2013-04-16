@@ -21,7 +21,7 @@
 
 ### Alfresco Package And Version Info
 
-default['alfresco']['version'] = "4.2.a"
+default['alfresco']['version'] = "4.2.c"
 default['alfresco']['zip_url'] =
   "http://dl.alfresco.com/release/community/build-04576/alfresco-community-4.2.c.zip"
 default['alfresco']['zip_sha256'] =
