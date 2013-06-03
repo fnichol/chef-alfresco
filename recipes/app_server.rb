@@ -211,6 +211,7 @@ if node['alfresco']['maven_gav_repository']
 
       rm -rf #{temp_dir}/alfresco.war && \\
       mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
+        -DrepoId=#{node['alfresco']['maven_repo_id']} \\
         -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
         -Dartifact=#{node['alfresco']['maven_gav_repository']} \\
         -Dpackaging=war \\
@@ -225,6 +226,7 @@ if node['alfresco']['maven_gav_share']
 
       rm -rf #{temp_dir}/share.war && \\
       mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
+        -DrepoId=#{node['alfresco']['maven_repo_id']} \\
         -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
         -Dartifact=#{node['alfresco']['maven_gav_share']} \\
         -Dpackaging=war \\
