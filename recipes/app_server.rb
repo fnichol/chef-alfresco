@@ -182,58 +182,60 @@ end
 
 ### Deploy WARS from archive zip
 
-if !node['alfresco']['maven_gav_repository']
-  execute "Deploy alfresco.war" do
-    user      alfresco_user
-    group     alfresco_group
-    command   <<-COMMAND.gsub(/^ {4}/, '')
+execute "Deploy alfresco.war" do
+  user      alfresco_user
+  group     alfresco_group
+  command   <<-COMMAND.gsub(/^ {4}/, '')
 
-      unzip -j #{archive_zip} web-server/webapps/alfresco.war -d #{temp_dir}
-    COMMAND
-  end
+    unzip -j #{archive_zip} web-server/webapps/alfresco.war -d #{temp_dir}
+  COMMAND
+
+  only_if { !node['alfresco']['maven_gav_repository'] }
 end
-if !node['alfresco']['maven_gav_share']
-  execute "Deploy share.war" do
-    user      alfresco_user
-    group     alfresco_group
-    command   <<-COMMAND.gsub(/^ {4}/, '')
 
-      unzip -j #{archive_zip} web-server/webapps/share.war -d #{temp_dir}
-    COMMAND
-  end
+execute "Deploy share.war" do
+  user      alfresco_user
+  group     alfresco_group
+  command   <<-COMMAND.gsub(/^ {4}/, '')
+
+    unzip -j #{archive_zip} web-server/webapps/share.war -d #{temp_dir}
+  COMMAND
+
+  only_if { !node['alfresco']['maven_gav_share'] }
 end
 
 ### Optionally download from Maven
 
-if node['alfresco']['maven_gav_repository']
-  execute "Extract download Maven artifact #{node['alfresco']['maven_gav_repository']}" do
-    command   <<-COMMAND.gsub(/^ {2}/, '')
 
-      rm -rf #{temp_dir}/alfresco.war && \\
-      mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
-        -DrepoId=#{node['alfresco']['maven_repo_id']} \\
-        -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
-        -Dartifact=#{node['alfresco']['maven_gav_repository']} \\
-        -Dpackaging=war \\
-        -Ddest=#{temp_dir}/alfresco.war && \\
-      chown #{alfresco_user}:#{alfresco_group} #{temp_dir}/alfresco.war
-    COMMAND
-  end
+execute "Extract download Maven artifact #{node['alfresco']['maven_gav_repository']}" do
+  command   <<-COMMAND.gsub(/^ {2}/, '')
+
+    rm -rf #{temp_dir}/alfresco.war && \\
+    mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
+      -DrepoId=#{node['alfresco']['maven_repo_id']} \\
+      -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
+      -Dartifact=#{node['alfresco']['maven_gav_repository']} \\
+      -Dpackaging=war \\
+      -Ddest=#{temp_dir}/alfresco.war && \\
+    chown #{alfresco_user}:#{alfresco_group} #{temp_dir}/alfresco.war
+  COMMAND
+
+  only_if { node['alfresco']['maven_gav_repository'] }
 end
-if node['alfresco']['maven_gav_share']
-  execute "Extract download Maven artifact #{node['alfresco']['maven_gav_share']}" do
-    command   <<-COMMAND.gsub(/^ {2}/, '')
 
-      rm -rf #{temp_dir}/share.war && \\
-      mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
-        -DrepoId=#{node['alfresco']['maven_repo_id']} \\
-        -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
-        -Dartifact=#{node['alfresco']['maven_gav_share']} \\
-        -Dpackaging=war \\
-        -Ddest=#{temp_dir}/share.war && \\
-      chown #{alfresco_user}:#{alfresco_group} #{temp_dir}/share.war
-    COMMAND
-  end
+execute "Extract download Maven artifact #{node['alfresco']['maven_gav_share']}" do
+  command   <<-COMMAND.gsub(/^ {2}/, '')
+
+    rm -rf #{temp_dir}/share.war && \\
+    mvn org.apache.maven.plugins:maven-dependency-plugin:2.4:get \\
+      -DrepoId=#{node['alfresco']['maven_repo_id']} \\
+      -DrepoUrl=#{node['alfresco']['maven_repo_url']} \\
+      -Dartifact=#{node['alfresco']['maven_gav_share']} \\
+      -Dpackaging=war \\
+      -Ddest=#{temp_dir}/share.war && \\
+    chown #{alfresco_user}:#{alfresco_group} #{temp_dir}/share.war
+  COMMAND
+  only_if { if node['alfresco']['maven_gav_share'] }
 end
 
 execute "Install AMPs into WARs" do
