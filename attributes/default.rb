@@ -54,7 +54,12 @@ default['alfresco']['root_dir'] = "/srv/alfresco/alf_data"
 default['alfresco']['img']['root'] = "/usr"
 default['alfresco']['swf']['exe']  = "/usr/bin/pdf2swf"
 
-default['alfresco']['ooo']['exe']      = "/usr/lib/openoffice/program/soffice"
+case platform
+when "debian","ubuntu"
+  default['alfresco']['ooo']['exe']      = "/usr/lib/openoffice/program/soffice"
+when "redhat", "centos", "scientific", "fedora", "arch", "amazon"
+  default['alfresco']['ooo']['exe']      = "/usr/bin/soffice"
+end
 default['alfresco']['ooo']['enabled']  = "true"
 
 default['alfresco']['jodconverter']['enabled']       = "true"
@@ -110,6 +115,8 @@ default['alfresco']['cifs']['netbios_smb']['session_port']  = "1139"
 case platform
 when "debian","ubuntu"
   node.set['alfresco']['pkgs']  = %w{libxalan2-java unzip fastjar libmysql-java}
+when "redhat", "centos", "scientific", "fedora", "arch", "amazon"
+  node.set['alfresco']['pkgs']  = ['unzip', "apr", "libreoffice-headless"]
 else
   node.set['alfresco']['pkgs']  = []
 end
