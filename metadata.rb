@@ -8,6 +8,8 @@ version          "0.1.1"
 recipe "alfresco", "Installs Alfresco Community Edition."
 
 supports "ubuntu"
+supports "el", ">= 6.0"
+supports "centos", ">= 6.0"
 
 depends "imagemagick"
 depends "java"
