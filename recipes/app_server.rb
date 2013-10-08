@@ -235,7 +235,7 @@ execute "Extract download Maven artifact #{node['alfresco']['maven_gav_share']}"
       -Ddest=#{temp_dir}/share.war && \\
     chown #{alfresco_user}:#{alfresco_group} #{temp_dir}/share.war
   COMMAND
-  only_if { if node['alfresco']['maven_gav_share'] }
+  only_if { node['alfresco']['maven_gav_share'] }
 end
 
 execute "Install AMPs into WARs" do
