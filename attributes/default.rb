@@ -21,11 +21,11 @@
 
 ### Alfresco Package And Version Info
 
-default['alfresco']['version'] = "4.2.c"
+default['alfresco']['version'] = "4.2.e"
 default['alfresco']['zip_url'] =
-  "http://dl.alfresco.com/release/community/build-04576/alfresco-community-4.2.c.zip"
+  "http://dl.alfresco.com/release/community/build-4848/alfresco-community-4.2.e.zip"
 default['alfresco']['zip_sha256'] =
-  "eede352ae98d355170f2860f59271d4509fc04005e1a6f22038978db894aaf8e"
+  "51e5f47ce286cf3b36fc23f4026ae836d64f51c2a3189e6b13a7dac97125f17"
 
 default['java']['jdk_version'] = "7"
 
