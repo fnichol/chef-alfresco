@@ -52,6 +52,7 @@ default['alfresco']['db']['jdbc_url']  =
 default['alfresco']['root_dir'] = "/srv/alfresco/alf_data"
 
 default['alfresco']['img']['root'] = "/usr"
+default['alfresco']['img']['coders'] = "/usr/lib/ImageMagick/modules-Q16/coders"
 default['alfresco']['swf']['exe']  = "/usr/bin/pdf2swf"
 
 case platform
