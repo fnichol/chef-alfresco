@@ -21,12 +21,13 @@
 
 ### Alfresco Package And Version Info
 
-default['alfresco']['version'] = "4.0.b"
+default['alfresco']['version'] = "4.2.e"
 default['alfresco']['zip_url'] =
-  "http://dl.alfresco.com/release/community/build-3835/alfresco-community-4.0.b.zip"
+  "http://dl.alfresco.com/release/community/build-4848/alfresco-community-4.2.e.zip"
 default['alfresco']['zip_sha256'] =
-  "2ea7671e9f9217c91eb0e37a32bd8bcc3a71ac6893c29c2cb80b9cb744f0b799"
+  "51e5f47ce286cf3b36fc23f4026ae836d64f51c2a3189e6b13a7dac97125f17"
 
+default['java']['jdk_version'] = "7"
 
 ### Default Stack-wide Host And Port Defaults
 
@@ -34,7 +35,7 @@ default['alfresco']['default_hostname'] = node['fqdn']
 default['alfresco']['default_port']     = "8080"
 
 default['alfresco']['java_opts'] =
-  "-Xms128m -Xmx1024m -XX:MaxPermSize=128m -Djava.awt.headless=true"
+  "-Xms128m -Xmx1280m -XX:MaxPermSize=188m -Djava.awt.headless=true"
 node.set['tomcat']['java_options'] = node['alfresco']['java_opts']
 
 node.set['tomcat']['restart_timing'] = "immediately"
@@ -51,9 +52,15 @@ default['alfresco']['db']['jdbc_url']  =
 default['alfresco']['root_dir'] = "/srv/alfresco/alf_data"
 
 default['alfresco']['img']['root'] = "/usr"
+default['alfresco']['img']['coders'] = "/usr/lib/ImageMagick/modules-Q16/coders"
 default['alfresco']['swf']['exe']  = "/usr/bin/pdf2swf"
 
-default['alfresco']['ooo']['exe']      = "/usr/lib/openoffice/program/soffice"
+case platform
+when "debian","ubuntu"
+  default['alfresco']['ooo']['exe']      = "/usr/lib/openoffice/program/soffice"
+when "redhat", "centos", "scientific", "fedora", "arch", "amazon"
+  default['alfresco']['ooo']['exe']      = "/usr/bin/soffice"
+end
 default['alfresco']['ooo']['enabled']  = "true"
 
 default['alfresco']['jodconverter']['enabled']       = "true"
@@ -106,12 +113,11 @@ default['alfresco']['cifs']['netbios_smb']['session_port']  = "1139"
 
 
 ### Platform Package Settings And Defaults
-
 case platform
 when "debian","ubuntu"
-  node.set['java']['install_flavor'] = "sun"
   node.set['alfresco']['pkgs']  = %w{libxalan2-java unzip fastjar libmysql-java}
+when "redhat", "centos", "scientific", "fedora", "arch", "amazon"
+  node.set['alfresco']['pkgs']  = ['unzip', "apr", "libreoffice-headless"]
 else
-  node.set['java']['install_flavor'] = "openjdk"
   node.set['alfresco']['pkgs']  = []
 end

@@ -40,8 +40,8 @@ end
 
 ### Include Recipe Dependencies
 
+include_recipe "mysql::ruby"
 include_recipe "mysql::server"
-gem_package "mysql"
 include_recipe "database"
 
 
