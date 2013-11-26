@@ -35,7 +35,7 @@ default['alfresco']['default_hostname'] = node['fqdn']
 default['alfresco']['default_port']     = "8080"
 
 default['alfresco']['java_opts'] =
-  "-Xms128m -Xmx1024m -XX:MaxPermSize=160m -Djava.awt.headless=true"
+  "-Xms128m -Xmx1280m -XX:MaxPermSize=188m -Djava.awt.headless=true"
 node.set['tomcat']['java_options'] = node['alfresco']['java_opts']
 
 node.set['tomcat']['restart_timing'] = "immediately"
