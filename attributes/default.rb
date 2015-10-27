@@ -1,117 +1,113 @@
+# Alfresco components that are not enabled by default:
+# analytics - Alfresco Reporting and Analytics feature; enterprise-only
+# aos - Alfresco Office Services (WARs); enterprise-only
+# media - Alfresco media-management; enterprise-only
+# rsyslog - Remote logging
+# logstash-forwarder - Remote logging
 #
-# Cookbook Name:: alfresco
-# attributes:: default
+# Default Alfresco components
 #
-# Author:: Fletcher Nichol (<fnichol@nichol.ca>)
-#
-# Copyright:: 2011, Fletcher Nichol
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+default['alfresco']['components'] = ['haproxy','nginx','tomcat','transform','repo','share','solr','mysql','rm','googledocs','yourkit']
 
-### Alfresco Package And Version Info
+# See .kitchen.yml
+# default['alfresco']['s3_databag'] = ""
+# default['alfresco']['s3_databag_item'] = ""
+# default['alfresco']['hz_share_databag'] = ""
+# default['alfresco']['hz_share_databag_item'] = ""
+# default["alfresco"]["jmxremote_databag"] = "credentials"
+# default["alfresco"]["jmxremote_databag_items"] = ["systemsmonitor", "systemscontrol"]
+# default["alfresco"]["mailsmtp_databag"] = "credentials"
+# default["alfresco"]["mailsmtp_databag_item"] = "outbound-email"
 
-default['alfresco']['version'] = "4.0.b"
-default['alfresco']['zip_url'] =
-  "http://dl.alfresco.com/release/community/build-3835/alfresco-community-4.0.b.zip"
-default['alfresco']['zip_sha256'] =
-  "2ea7671e9f9217c91eb0e37a32bd8bcc3a71ac6893c29c2cb80b9cb744f0b799"
+# New ones
+default['alfresco']['internal_hostname'] = "127.0.0.1"
+default['alfresco']['internal_port'] = "9000"
+default['alfresco']['internal_portssl'] = "9443"
+default['alfresco']['internal_protocol'] = "http"
 
+default['alfresco']['public_hostname'] = "localhost"
+default['alfresco']['public_port'] = "80"
+default['alfresco']['public_portssl'] = "443"
+default['alfresco']['public_protocol'] = "https"
 
-### Default Stack-wide Host And Port Defaults
+default['alfresco']['rmi_server_hostname'] = node['alfresco']['public_hostname']
 
-default['alfresco']['default_hostname'] = node['fqdn']
-default['alfresco']['default_port']     = "8080"
+# Alfresco version; you can use Enterprise versions, ie. '5.0.1'
+default['alfresco']['groupId'] = "org.alfresco"
+default['alfresco']['version'] = "5.1.b-EA"
+default['alfresco']['edition'] = "community"
 
-default['alfresco']['java_opts'] =
-  "-Xms128m -Xmx1024m -XX:MaxPermSize=128m -Djava.awt.headless=true"
-node.set['tomcat']['java_options'] = node['alfresco']['java_opts']
+default['alfresco']['home'] = "/usr/share/tomcat"
+default['alfresco']['user'] = "tomcat"
 
-node.set['tomcat']['restart_timing'] = "immediately"
+default['alfresco']['skip_certificate_creation'] = false
 
+# Use log4j json as output
+default['alfresco']['log.json.enabled'] = false
 
-### Database Settings
+# Patch alfresco web.xml to disable SSL restrictions and use secureComms=none
+default['alfresco']['enable.web.xml.nossl.patch'] = true
 
-default['alfresco']['db']['user']      = "alfresco"
-default['alfresco']['db']['password']  = "alfresco"
-default['alfresco']['db']['database']  = "alfresco"
-default['alfresco']['db']['jdbc_url']  =
-  "jdbc:mysql://localhost/#{node['alfresco']['db']['database']}?useUnicode=yes&characterEncoding=UTF-8"
+#Generates alfresco-global.properties using all node['alfresco']['properties'] key/value attributes
+default['alfresco']['generate.global.properties'] = true
 
-default['alfresco']['root_dir'] = "/srv/alfresco/alf_data"
+#Generates share-config-custom.xml using a pre-defined template (check templates/default) and configuring http endpoint and disabling CSRF
+default['alfresco']['generate.share.config.custom'] = true
 
-default['alfresco']['img']['root'] = "/usr"
-default['alfresco']['swf']['exe']  = "/usr/bin/pdf2swf"
+default['alfresco']['generate.solr.core.config'] = true
 
-default['alfresco']['ooo']['exe']      = "/usr/lib/openoffice/program/soffice"
-default['alfresco']['ooo']['enabled']  = "true"
+#Generates repo-log4j.properties using all node['alfresco']['repo-log4j'] key/value attributes
+default['alfresco']['generate.repo.log4j.properties'] = true
 
-default['alfresco']['jodconverter']['enabled']       = "true"
-default['alfresco']['jodconverter']['office_home']   = "/usr/lib/openoffice"
-default['alfresco']['jodconverter']['port_numbers']  = "8100"
+#Patches an existing share-config-custom.xml using node['alfresco']['properties'] key/value attributes and replacing all @@key@@ occurrencies
+#Note! To enable this, you must provide your own share-config-custom.xml in
+# #{node['alfresco']['shared']}/classes/alfresco/web-extension/share-config-custom.xml
+default['alfresco']['patch.share.config.custom'] = false
 
+#License defaults
+default['alfresco']['license_source'] = 'alfresco-license'
+default['alfresco']['license_cookbook'] = 'alfresco'
 
-### Mail Defaults
+# Using Alfresco Nexus public by default (in case databags aren't in place)
+default['artifact-deployer']['maven']['repositories']['public']['url'] = "https://artifacts.alfresco.com/nexus/content/groups/public"
 
-default['alfresco']['mail']['protocol']         = "smtp"
-default['alfresco']['mail']['port']             = "25"
-default['alfresco']['mail']['username']         = "anonymous"
-default['alfresco']['mail']['encoding']         = "UTF-8"
-default['alfresco']['mail']['from']['default']  = "alfresco@alfresco.org"
+#Mysql defaults
+default['mysql']['update_gcc'] = true
 
-default['alfresco']['mail']['smtp']['auth']                 = "false"
-default['alfresco']['mail']['smtps']['auth']                = "false"
-default['alfresco']['mail']['smtps']['starttls']['enable']  = "false"
+# Java defaults
+default["java"]["default"] = true
+default["java"]["accept_license_agreement"] = true
+default["java"]["install_flavor"] = "oracle"
+default["java"]["jdk_version"] = "8"
+default["java"]["java_home"] = "/usr/lib/jvm/java"
+default["java"]["oracle"]['accept_oracle_download_terms']  = true
 
+default['java']['jdk']['8']['x86_64']['url'] = 'http://download.oracle.com/otn-pub/java/jdk/8u66-b17/jdk-8u66-linux-x64.tar.gz'
+default['java']['jdk']['8']['x86_64']['checksum'] = '88f31f3d642c3287134297b8c10e61bf'
 
-### Alfresco URL Construction Defaults
+#3rd-party defaults
+default['alfresco']['install_fonts'] = true
+# Exclude chkfontpath due to unsatisfied dependency on xfs
+default['alfresco']['exclude_font_packages'] = "tv-fonts chkfontpath pagul-fonts\*"
 
-default['alfresco']['url']['alfresco']['context']   = "alfresco"
-default['alfresco']['url']['alfresco']['host']      = node['alfresco']['default_hostname']
-default['alfresco']['url']['alfresco']['port']      = node['alfresco']['default_port']
-default['alfresco']['url']['alfresco']['protocol']  = "http"
+default['logging']['log4j.rootLogger'] = "warn, File"
+# No need for console logs, just dump to file
+# default['logging']['log4j.appender.Console'] = "org.apache.log4j.DailyRollingFileAppender"
+# default['logging']['log4j.appender.Console.layout'] = "org.apache.log4j.PatternLayout"
+# default['logging']['log4j.appender.Console.layout.ConversionPattern'] = "%d{ISO8601} %x %-5p [%c{3}] [%t] %m%n"
+# default['logging']['log4j.appender.Console.layout.ConversionPattern'] = "%d{ISO8601} %-5p [%c] %m%n"
+default['logging']['log4j.appender.File'] = "org.apache.log4j.DailyRollingFileAppender"
+default['logging']['log4j.appender.File.Append'] = "true"
+default['logging']['log4j.appender.File.DatePattern'] = "'.'yyyy-MM-dd"
+default['logging']['log4j.appender.File.layout'] = "org.apache.log4j.PatternLayout"
+default['logging']['log4j.appender.File.layout.ConversionPattern'] = "%d{ABSOLUTE} %-5p [%c] %m%n"
+default['logging']['log4j.appender.File.File'] = "${logfilename}"
 
-default['alfresco']['url']['share']['context']   = "share"
-default['alfresco']['url']['share']['host']      = node['alfresco']['default_hostname']
-default['alfresco']['url']['share']['port']      = node['alfresco']['default_port']
-default['alfresco']['url']['share']['protocol']  = "http"
+# DB params shared between client and server
+default['alfresco']['db']['server_root_password'] = 'alfresco'
+default['alfresco']['db']['root_user'] = "root"
 
-
-### IMAP Server Defaults
-
-default['alfresco']['imap']['server']['enabled']  = "false"
-default['alfresco']['imap']['server']['port']     = "1143"
-default['alfresco']['imap']['server']['host']     = "0.0.0.0"
-
-
-### CIFS Server Defaults
-
-default['alfresco']['cifs']['enabled']                      = "false"
-default['alfresco']['cifs']['server_name']                  = "alfresco"
-default['alfresco']['cifs']['ipv6']['enabled']              = "false"
-default['alfresco']['cifs']['tcpip_smb']['port']            = "1445"
-default['alfresco']['cifs']['netbios_smb']['name_port']     = "1137"
-default['alfresco']['cifs']['netbios_smb']['datagram_port'] = "1138"
-default['alfresco']['cifs']['netbios_smb']['session_port']  = "1139"
-
-
-### Platform Package Settings And Defaults
-
-case platform
-when "debian","ubuntu"
-  node.set['java']['install_flavor'] = "sun"
-  node.set['alfresco']['pkgs']  = %w{libxalan2-java unzip fastjar libmysql-java}
-else
-  node.set['java']['install_flavor'] = "openjdk"
-  node.set['alfresco']['pkgs']  = []
-end
+# Alfresco services configuration
+default["alfresco"]["start_service"] = true
+default['alfresco']['restart_services'] = ['tomcat-alfresco','tomcat-share','tomcat-solr']
+default['alfresco']['restart_action']   = [:enable, :restart]

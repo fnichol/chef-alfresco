@@ -1,29 +1,26 @@
 #!/usr/bin/env rake
+require 'foodcritic'
+require 'rake'
 
-@cookbook = "alfresco"
+desc "Runs knife cookbook test"
+task :knife do
+  sh "bundle exec knife cookbook test cookbook -o ./ -a"
+end
 
-desc "Runs foodcritc linter"
+desc "Runs foodcritic test"
 task :foodcritic do
-  if Gem::Version.new("1.9.2") <= Gem::Version.new(RUBY_VERSION.dup)
-    sandbox = File.join(File.dirname(__FILE__), %w{tmp foodcritic}, @cookbook)
-    prepare_foodcritic_sandbox(sandbox)
-
-    sh "foodcritic --epic-fail any #{File.dirname(sandbox)}"
-  else
-    puts "WARN: foodcritic run is skipped as Ruby #{RUBY_VERSION} is < 1.9.2."
-  end
+  FoodCritic::Rake::LintTask.new
+  sh "bundle exec foodcritic -f any ."
 end
 
-task :default => 'foodcritic'
-
-private
-
-def prepare_foodcritic_sandbox(sandbox)
-  files = %w{*.md *.rb attributes definitions files providers
-    recipes resources templates}
-
-  rm_rf sandbox
-  mkdir_p sandbox
-  cp_r Dir.glob("{#{files.join(',')}}"), sandbox
-  puts "\n\n"
+desc "Runs rubocop checks"
+task :rubocop do
+  sh "bundle exec rubocop --fail-level warn"
 end
+
+desc "Package Berkshelf distro"
+task :dist do
+  sh "rm -rf Berksfile.lock cookbooks-*.tar.gz; bundle exec berks package; rm -f cookbooks-*.tar.gz"
+end
+
+task :default => [:foodcritic, :rubocop, :knife, :dist]

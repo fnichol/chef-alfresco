@@ -1,0 +1,54 @@
+<!-- This is a sample configuration file from Alfresco Community 4.2.b -->
+<alfresco-config>
+
+   <!-- @TODO - still not working properly, needs more investigaction -->
+   <config evaluator="string-compare" condition="CSRFPolicy" replace="true">
+      <properties>
+         <token>Alfresco-CSRFToken</token>
+         <referer><%= node['alfresco']['shareproperties']['referer'] %></referer>
+         <origin><%= node['alfresco']['shareproperties']['origin'] %></origin>
+      </properties>
+   </config>
+
+	<!-- example port config used to access remote Alfresco server (default is 8081) -->
+   <config evaluator="string-compare" condition="Remote">
+      <remote>
+         <endpoint>
+            <id>alfresco-noauth</id>
+            <name>Alfresco - unauthenticated access</name>
+            <description>Access to Alfresco Repository WebScripts that do not require authentication</description>
+            <connector-id>alfresco</connector-id>
+            <endpoint-url><%= node['alfresco']['shareproperties']['alfresco.protocol'] %>://<%= node['alfresco']['shareproperties']['alfresco.host'] %>:<%= node['alfresco']['shareproperties']['alfresco.port'] %>/<%= node['alfresco']['properties']['alfresco.context'] %>/s</endpoint-url>
+            <identity>none</identity>
+         </endpoint>
+
+         <endpoint>
+            <id>alfresco</id>
+            <name>Alfresco - user access</name>
+            <description>Access to Alfresco Repository WebScripts that require user authentication</description>
+            <connector-id>alfresco</connector-id>
+            <endpoint-url><%= node['alfresco']['shareproperties']['alfresco.protocol'] %>://<%= node['alfresco']['shareproperties']['alfresco.host'] %>:<%= node['alfresco']['shareproperties']['alfresco.port'] %>/<%= node['alfresco']['shareproperties']['alfresco.context'] %>/s</endpoint-url>
+            <identity>user</identity>
+         </endpoint>
+
+         <endpoint>
+            <id>alfresco-feed</id>
+            <name>Alfresco Feed</name>
+            <description>Alfresco Feed - supports basic HTTP authentication via the EndPointProxyServlet</description>
+            <connector-id><%= node['alfresco']['shareproperties']['alfresco.protocol'] %></connector-id>
+            <endpoint-url><%= node['alfresco']['shareproperties']['alfresco.protocol'] %>://<%= node['alfresco']['shareproperties']['alfresco.host'] %>:<%= node['alfresco']['shareproperties']['alfresco.port'] %>/<%= node['alfresco']['shareproperties']['alfresco.context'] %>/s</endpoint-url>
+            <basic-auth>true</basic-auth>
+            <identity>user</identity>
+         </endpoint>
+
+         <endpoint>
+            <id>activiti-admin</id>
+            <name>Activiti Admin UI - user access</name>
+            <description>Access to Activiti Admin UI, that requires user authentication</description>
+            <connector-id>activiti-admin-connector</connector-id>
+            <endpoint-url><%= node['alfresco']['shareproperties']['alfresco.protocol'] %>://<%= node['alfresco']['shareproperties']['alfresco.host'] %>:<%= node['alfresco']['shareproperties']['alfresco.port'] %>/<%= node['alfresco']['shareproperties']['alfresco.context'] %>/activiti-admin</endpoint-url>
+            <identity>user</identity>
+         </endpoint>
+      </remote>
+   </config>
+</alfresco-config>
