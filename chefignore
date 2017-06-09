@@ -1,6 +1,10 @@
+# Put files/directories that should be ignored in this file.
+# Lines that start with '# ' are comments.
+
 # General ignores
 Gemfile.lock
 tmp/
+Berksfile.lock
 berks-cookbooks
 .DS_Store
 nohup.out
@@ -17,3 +21,10 @@ nohup.out
 
 # Alfresco license ignores
 **/*.lic
+
+# More Chef ignores
+test/
+Vagrant*
+Berks*
+.git
+.gitignore
